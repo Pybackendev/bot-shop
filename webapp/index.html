@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Магазин</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="tabs">
+      <button class="tab active" data-tab="catalog">Каталог</button>
+      <button class="tab" data-tab="cart">Корзина (<span id="cart-count">0</span>)</button>
+    </div>
+
+    <div id="catalog" class="screen active"></div>
+
+    <div id="cart" class="screen">
+      <div id="cart-items"></div>
+      <div id="cart-total"></div>
+      <div id="checkout-form" style="display:none">
+        <input id="f-name" placeholder="Имя" />
+        <input id="f-phone" placeholder="Телефон" />
+        <input id="f-address" placeholder="Адрес (если курьер/НП)" />
+        <select id="f-delivery">
+          <option value="pickup">Самовывоз</option>
+          <option value="courier">Курьер</option>
+          <option value="nova_poshta">Новая почта</option>
+        </select>
+        <select id="f-payment">
+          <option value="cash">Наличные при получении</option>
+          <option value="card_on_delivery">Картой при получении</option>
+          <option value="liqpay">Онлайн-оплата (LiqPay)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+body { font-family: sans-serif; margin: 0; padding: 12px; background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); }
+#tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.tab { flex: 1; padding: 10px; border: none; border-radius: 8px; background: #eee; cursor: pointer; }
+.tab.active { background: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); }
+.screen { display: none; }
+.screen.active { display: block; }
+.product-card { display: flex; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; }
+.product-card img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; background: #f0f0f0; }
+.product-card .info { flex: 1; }
+.product-card button { padding: 6px 10px; border: none; border-radius: 6px; background: var(--tg-theme-button-color, #2481cc); color: #fff; }
+.cart-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+#checkout-form input, #checkout-form select { display: block; width: 100%; margin: 6px 0; padding: 8px; box-sizing: border-box; }

@@ -1,0 +1,31 @@
+# Render Blueprint — один Web Service (бот + API + Mini App) + отдельная Postgres-БД.
+# SQLite не годится: диск Web Service не переживает редеплой/рестарт,
+# а тут хранятся товары и заказы, терять которые нельзя.
+databases:
+  - name: telegram-shop-db
+    plan: free
+
+services:
+  - type: web
+    name: telegram-shop-bot
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_CHAT_ID
+        sync: false
+      - key: ADMIN_API_SECRET
+        sync: false
+      - key: LIQPAY_PUBLIC_KEY
+        sync: false
+      - key: LIQPAY_PRIVATE_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: telegram-shop-db
+          property: connectionString
