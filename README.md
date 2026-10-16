@@ -1,69 +1,78 @@
-# Telegram Shop Bot — один сервис
+# Telegram Shop · Магазин внутри Telegram
 
-Бот (aiogram 3, polling) + FastAPI backend + Mini App — всё в одном процессе,
-один Render Web Service (бесплатный тариф).
+Магазин с каталогом, корзиной и оформлением заказов в Telegram Mini App. Покупатель выбирает товары и переходит к оплате через LiqPay; администратор управляет товарами и заказами командами бота.
 
-## Как это работает
+**Python · aiogram 3 · FastAPI · SQLAlchemy · Telegram Mini App · LiqPay**
 
-- Бот запускается фоновой задачей внутри того же процесса, что и FastAPI
-  (`app/main.py`, `lifespan`) — отдельный воркер/сервис не нужен.
-- Mini App отдаётся тем же сервисом статикой по пути `/webapp`.
-- API живёт по `/api/...` на том же домене — Mini App ходит на `window.location.origin`.
-- Бот-админка (`/add_product`, `/orders` и т.д.) зовёт функции backend
-  напрямую (`app/api_client.py`), без HTTP — один процесс, один SQLite-файл.
+## Возможности
+
+- Каталог с описаниями, ценами и фотографиями товаров.
+- Корзина и оформление заказа в Mini App.
+- Создание ссылки на оплату LiqPay и обработка подписанного callback.
+- Админ-команды `/add_product`, `/delete_product`, `/orders`, `/set_status`.
+- Проверка Telegram initData на backend.
+- API и бот работают в одном процессе; Mini App раздаётся как статика.
+- SQLite по умолчанию; подключение PostgreSQL через `DATABASE_URL`.
+
+## Структура репозитория
+
+```text
+main.py                    # FastAPI и фоновый запуск бота
+__init__.py                # загрузка .env
+config.py                  # настройки бота и URL
+database.py                # SQLAlchemy и подключение БД
+models.py / schemas.py     # модели данных и API
+api_client.py              # вызовы backend из бота
+bot_start.py / bot_admin.py # Telegram-команды
+router_*.py                # HTTP-маршруты
+service_*.py               # авторизация, платежи, уведомления
+webapp/                    # index.html, style.css, app.js
+render.yaml                # конфигурация развёртывания
+```
 
 ## Локальный запуск
 
+Нужен Python 3.11+. **Текущий код ожидает пакет `app`**: использует относительные импорты, а статика подключается по пути `app/webapp`. Поэтому клонируйте репозиторий в каталог `app` внутри рабочей папки и запускайте из родительского каталога:
+
 ```bash
-pip install -r requirements.txt
-cp .env.example .env  # заполнить BOT_TOKEN, ADMIN_CHAT_ID и т.д.
+mkdir telegram-shop
+cd telegram-shop
+git clone https://github.com/Pybackendev/bot-shop.git app
+python -m venv .venv
+```
+
+Активируйте окружение: Windows PowerShell — `.\.venv\Scripts\Activate.ps1`, Linux/macOS — `source .venv/bin/activate`.
+
+```bash
+pip install -r app/requirements.txt
+```
+
+Скопируйте `app/.env.example` в `.env` **в текущей папке `telegram-shop`**, заполните настройки и запустите:
+
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-Открой `http://localhost:8000/webapp` в браузере — каталог должен подгрузиться
-(добавь товар через `/add_product` в личке с ботом). Для теста прямо внутри
-Telegram нужен HTTPS — либо деплой на Render, либо `ngrok http 8000`
-и `RENDER_EXTERNAL_URL=https://<ngrok-адрес>` в `.env`.
+- Mini App: http://localhost:8000/webapp/
+- API-документация: http://localhost:8000/docs
 
-## Деплой на Render
+Без `BOT_TOKEN` запускаются только API и Mini App. Для Telegram нужен публичный HTTPS-адрес в `RENDER_EXTERNAL_URL`. Для создания товаров отправьте `/add_product` с аккаунта, указанного в `ADMIN_CHAT_ID`. Платёжный сценарий требует ключей LiqPay и доступного callback-адреса; наличие интеграции в коде не подтверждает проведение реальных платежей.
 
-1. Залить репозиторий на GitHub.
-2. Render → New → Blueprint → указать репозиторий (подхватит `render.yaml`),
-   либо руками: New → Web Service, `pip install -r requirements.txt`,
-   старт-команда `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-3. В Environment проставить `BOT_TOKEN`, `ADMIN_CHAT_ID`, `ADMIN_API_SECRET`,
-   `LIQPAY_PUBLIC_KEY`, `LIQPAY_PRIVATE_KEY`.
-4. `RENDER_EXTERNAL_URL` можно не задавать вручную — Render сам прокидывает
-   похожую переменную (`RENDER_EXTERNAL_URL`) для сервисов на своём домене;
-   если не появится сама, впиши финальный `https://<имя>.onrender.com` руками.
+## Переменные окружения
 
-⚠️ **Free-тариф Render "усыпляет" сервис без трафика** — бот на polling в
-это время не будет отвечать. Для постоянно живого бота нужен платный план
-или внешний пинг (например, UptimeRobot дергает `/` раз в 10 минут).
+| Переменная | Назначение |
+| --- | --- |
+| `BOT_TOKEN` | Токен от BotFather |
+| `ADMIN_CHAT_ID` | Числовой Telegram ID администратора |
+| `ADMIN_API_SECRET` | Секрет административного API |
+| `RENDER_EXTERNAL_URL` | Публичный адрес API и Mini App |
+| `DATABASE_URL` | По умолчанию `sqlite:///./shop.db` |
+| `LIQPAY_PUBLIC_KEY` | Публичный ключ LiqPay |
+| `LIQPAY_PRIVATE_KEY` | Приватный ключ LiqPay |
 
-⚠️ **SQLite на Render — не персистентный.** Файл `shop.db` слетит при любом
-редеплое/рестарте. Для демо/портфолио ок, для реального магазина — нужен
-Render Disk (платный) либо переезд на управляемую БД.
+Не добавляйте `.env` и рабочую базу в Git. Для развёртывания в корне checkout нужно сначала согласовать пакет `app`, путь к статике и команды в `render.yaml`. Для постоянного хранения SQLite требуется постоянный диск; альтернативный вариант — PostgreSQL. Polling-боту нужен непрерывно работающий процесс.
 
-## Структура
+## Автор
 
-```
-app/
-├── main.py            # FastAPI + бот в одном процессе + отдача Mini App
-├── config.py           # токены, URL
-├── database.py          # SQLite/SQLAlchemy сессии
-├── models.py            # Product, Order, OrderItem, User
-├── schemas.py            # Pydantic-схемы
-├── api_client.py          # прямые вызовы backend-логики из бота (без HTTP)
-├── routers/              # products, orders, payments (webhook), admin
-├── services/              # telegram_auth (валидация initData), liqpay, notifications
-├── bot_handlers/            # /start, админ-команды
-└── webapp/                   # Mini App: index.html, style.css, app.js
-```
+[Pybackendev](https://github.com/Pybackendev) · [Связаться на Freelancehunt](https://freelancehunt.com/freelancer/Pybackendev.html)
 
-## Что дальше не сделано
-
-- Рендер фото товара в Mini App (photo_file_id нужно отдавать через
-  Telegram File API или хранить в облаке)
-- Пагинация/поиск каталога, "Мои заказы"
-- Тесты
