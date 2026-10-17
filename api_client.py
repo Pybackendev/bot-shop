@@ -5,8 +5,8 @@
 такими же, чтобы bot_handlers не пришлось переписывать.
 """
 
-from .database import SessionLocal
-from .models import Product, Order, OrderStatus
+from database import SessionLocal
+from models import Product, Order, OrderStatus
 
 
 async def add_product(name: str, description: str, price: float, photo_file_id: str | None, stock: int = 0) -> dict:

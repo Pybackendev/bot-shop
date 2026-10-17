@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
-from .config import WEBAPP_URL
+from config import WEBAPP_URL
 
 router = Router()
 

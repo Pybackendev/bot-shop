@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
-from .database import get_db
-from .models import Product
-from .schemas import ProductOut
-from .config import BOT_TOKEN
+from database import get_db
+from models import Product
+from schemas import ProductOut
+from config import BOT_TOKEN
 
 router = APIRouter(prefix="/api/products", tags=["products"])
 

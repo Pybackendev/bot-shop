@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Form, HTTPException
 from sqlalchemy.orm import Session
 
-from .database import get_db
-from .models import Order, OrderStatus
-from .service_liqpay import verify_callback
-from .service_notifications import notify_order_paid
+from database import get_db
+from models import Order, OrderStatus
+from service_liqpay import verify_callback
+from service_notifications import notify_order_paid
 
 router = APIRouter(prefix="/api/webhook", tags=["payments"])
 

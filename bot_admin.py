@@ -4,8 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message
 
-from .config import ADMIN_CHAT_ID
-from . import api_client
+from config import ADMIN_CHAT_ID
+import api_client
 
 router = Router()
 

@@ -3,12 +3,12 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from .database import get_db
-from .models import Product, Order, OrderItem, User, PaymentMethod, OrderStatus
-from .schemas import OrderCreate, OrderOut
-from .service_telegram_auth import get_telegram_user
-from .service_liqpay import create_payment_link
-from .service_notifications import notify_order_created
+from database import get_db
+from models import Product, Order, OrderItem, User, PaymentMethod, OrderStatus
+from schemas import OrderCreate, OrderOut
+from service_telegram_auth import get_telegram_user
+from service_liqpay import create_payment_link
+from service_notifications import notify_order_created
 
 router = APIRouter(prefix="/api/order", tags=["orders"])
 

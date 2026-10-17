@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel, Field
 
-from .models import DeliveryMethod, PaymentMethod, OrderStatus
+from models import DeliveryMethod, PaymentMethod, OrderStatus
 
 
 # ---------- Product ----------

@@ -3,9 +3,9 @@ import os
 from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy.orm import Session
 
-from .database import get_db
-from .models import Product, Order, OrderStatus
-from .schemas import ProductCreate, ProductUpdate, ProductOut, OrderOut
+from database import get_db
+from models import Product, Order, OrderStatus
+from schemas import ProductCreate, ProductUpdate, ProductOut, OrderOut
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
