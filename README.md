@@ -4,6 +4,8 @@ Telegram-магазин с каталогом, корзиной и оформл�
 
 **Python · aiogram 3 · FastAPI · SQLAlchemy · SQLite/PostgreSQL · LiqPay**
 
+[Открыть демо-бота @BotShop_1_bot в Telegram](https://t.me/BotShop_1_bot)
+
 ## Возможности
 
 - Каталог товаров с описанием, ценой, остатком и фотографией.
